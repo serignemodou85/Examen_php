@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mar. 19 mars 2024 à 01:15
+-- Généré le : mar. 19 mars 2024 à 18:55
 -- Version du serveur : 10.4.28-MariaDB
 -- Version de PHP : 8.2.4
 
@@ -56,8 +56,8 @@ CREATE TABLE `mémoires` (
   `Titre` varchar(255) DEFAULT NULL,
   `Auteur` varchar(255) DEFAULT NULL,
   `Description` text DEFAULT NULL,
-  `ThèmeID` int(11) DEFAULT NULL,
-  `DomaineID` int(11) DEFAULT NULL,
+  `ThèmeID` int(11) NOT NULL,
+  `DomaineID` int(11) NOT NULL,
   `Fichier` blob DEFAULT NULL,
   `DateSoumission` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -107,8 +107,8 @@ CREATE TABLE `utilisateurs` (
 --
 
 INSERT INTO `utilisateurs` (`UtilisateurID`, `NomUtilisateur`, `TypeUtilisateur`, `MotDePasse`, `prenom`, `nom`) VALUES
-(11, '', '', '$2y$10$qERmQhxXeMOr6wGANmUthuJsytHiXQsepuTGx.sU2ar7zOGYzC1bC', 'Balla', 'beye'),
-(12, 'Moustaphagueye', 'Admin', '$2y$10$j1Te.cYWDd154wTxRVpqkO2EMqkbqVDYPG7GkJOD7ojXWqzSTtUwi', 'Gueye', 'Moustapha');
+(11, 'ballabeye', 'Étudiant', 'azerty123', 'Balla', 'beye'),
+(12, 'Moustaphagueye', 'Admin', 'azerty456', 'Gueye', 'Moustapha');
 
 --
 -- Index pour les tables déchargées
@@ -176,7 +176,7 @@ ALTER TABLE `domaines`
 -- AUTO_INCREMENT pour la table `mémoires`
 --
 ALTER TABLE `mémoires`
-  MODIFY `MémoireID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `MémoireID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `thèmes`

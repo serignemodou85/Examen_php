@@ -168,10 +168,27 @@ try {
 
         <section id="gestion_utilisateurs">
             <div id="utilisateurs">
-                <!-- Liste des utilisateurs affichée dynamiquement via PHP -->
-                <?php require_once("liste_utilisateurs.php"); ?>
+                <?php 
+                // Vérifier si l'administrateur a choisi d'afficher les utilisateurs
+                $afficherUtilisateurs = isset($_POST['afficher_utilisateurs']) ? true : false;
+                
+                if ($afficherUtilisateurs) {
+                    // Inclure le fichier PHP pour afficher la liste des utilisateurs
+                    require_once("liste_utilisateurs.php"); 
+                }
+                ?>
+                <form method="post">
+                    <?php if ($afficherUtilisateurs) { ?>
+                        <!-- Bouton pour masquer les utilisateurs -->
+                        <button type="submit" name="masquer_utilisateurs">Masquer Utilisateurs</button>
+                    <?php } else { ?>
+                        <!-- Bouton pour afficher les utilisateurs -->
+                        <button type="submit" name="afficher_utilisateurs">Afficher Utilisateurs</button>
+                    <?php } ?>
+                </form>
             </div>
         </section>
+
         
         <section id="ajout_utilisateur">
             <form id="ajouterUtilisateurForm" method="post">
