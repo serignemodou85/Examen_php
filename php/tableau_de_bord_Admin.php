@@ -173,7 +173,7 @@ try {
                 $afficherUtilisateurs = isset($_POST['afficher_utilisateurs']) ? true : false;
                 
                 if ($afficherUtilisateurs) {
-                    // Inclure le fichier PHP pour afficher la liste des utilisateurs
+                    
                     require_once("liste_utilisateurs.php"); 
                 }
                 ?>
@@ -219,7 +219,23 @@ try {
         <section id="gestion_memoires">
             <div id="memoires">
                 <!-- Liste des mémoires affichée dynamiquement via PHP -->
-                <?php require_once("listes_memoires.php"); ?>
+                <?php 
+                // Vérifier si l'administrateur a choisi d'afficher les memoires
+                $afficherMemoires = isset($_POST['afficher_memoires']) ? true : false;
+                
+                if ($afficherMemoires) {
+                    
+                    require_once("liste_memoires.php"); 
+                }
+                ?>
+                <form method="post">
+                    <?php if ($afficherUtilisateurs) { ?>
+                        <!-- Bouton pour masquer les utilisateurs -->
+                        <button type="submit" name="masquer_memoires">Masquer Memoires</button>
+                    <?php } else { ?>
+                        <!-- Bouton pour afficher les utilisateurs -->
+                        <button type="submit" name="afficher_memoires">Afficher Memoires</button>
+                    <?php } ?>
             </div>
         </section>
 

@@ -1,33 +1,42 @@
 <?php
+// Inclusion des fichiers de connexion et des fonctions utilisateur
 require_once("./connexion.php");
 require_once("./utilisateur.php");
 
+// Message d'erreur initialisé à vide
 $erreurMessage = '';
 
 // Traitement de la connexion de l'utilisateur
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Vérification de la soumission du formulaire avec les champs requis remplis
     if(isset($_POST['NomUtilisateur']) && isset($_POST['mot_de_passe']) && !empty($_POST['NomUtilisateur']) && !empty($_POST['mot_de_passe'])) {
         $nomUtilisateur = $_POST['NomUtilisateur'];
         $motDePasse = $_POST['mot_de_passe'];
 
         try {
+            // Requête pour récupérer l'utilisateur de la base de données
             $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE NomUtilisateur = ?");
             $stmt->execute([$nomUtilisateur]);
             $user = $stmt->fetch();
-            // Si le nom d'utilisateur est trouvé dans la base, on vérifie le mot de passe
+            
+            // Si l'utilisateur est trouvé dans la base de données
             if (!empty($user)) {
+                // Vérification du mot de passe
                 if (password_verify($motDePasse, $user["MotDePasse"])) {
+                    // Démarrage de la session et enregistrement des informations utilisateur
                     session_start();
-                    $_SESSION['id'] = $user['UtilisateurID']; // Correction: UtilisateurID est le nom correct de la colonne
-                    $_SESSION['type'] = $user['TypeUtilisateur']; // Correction: TypeUtilisateur est le nom correct de la colonne
-
-                    // Utilisation des fonctions Administrateur() et Etudiant() pour déterminer le type d'utilisateur
-                    if (Administrateur($pdo, $nomUtilisateur)) {
+                    $_SESSION['id'] = $user['UtilisateurID']; 
+                    $_SESSION['type'] = $user['TypeUtilisateur']; 
+                    
+                    // Redirection vers le tableau de bord en fonction du type d'utilisateur
+                    if ($user['TypeUtilisateur'] === 'administrateur') {
                         header('Location: tableau_de_bord_Admin.php');
-                    } elseif (Etudiant($pdo, $nomUtilisateur)) { 
+                        exit(); // Assurez-vous de sortir du script après la redirection
+                    } elseif ($user['TypeUtilisateur'] === 'etudiant') { 
                         header('Location: tableau_de_bord_Utilisateur.php');
+                        exit(); // Assurez-vous de sortir du script après la redirection
                     } else {
-                        $erreurMessage = "Mauvaise combinaison nom d'utilisateur ou mot de passe.";
+                        $erreurMessage = "Type d'utilisateur non reconnu.";
                     }
                 } else {
                     $erreurMessage = "Le mot de passe est incorrect.";
@@ -46,13 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Accueil</title>
+    <title>Authentification</title>
     <link rel="stylesheet" href="../css/connexion.css">
 </head>
 <body>
     <div class="login-box">
         <h2>Identification</h2>
-        <form method="post" action="">
+        <form method="POST" action="index.php">
             <div class="form-group">
                 <label for="NomUtilisateur">Nom d'utilisateur:</label>
                 <input type="text" id="NomUtilisateur" name="NomUtilisateur" required>

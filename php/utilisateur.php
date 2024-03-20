@@ -43,12 +43,12 @@ class Utilisateur {
     }
     
     // Méthode pour vérifier si l'utilisateur est un administrateur
-    public function estAdministrateur() {
+    public function Administrateur() {
         return $this->typeUtilisateur === 'Admin';
     }
     
     // Méthode pour vérifier si l'utilisateur est un étudiant
-    public function estEtudiant() {
+    public function Etudiant() {
         return $this->typeUtilisateur === 'Étudiant';
     }
 }
