@@ -125,13 +125,13 @@ try {
     <link rel="stylesheet" href="../css/tableau_de_bord_Admin.css">
 </head>
 <body>
-    <nav>
+<div class="menu">
         <ul>
             <li><a href="#gestion_utilisateurs">Gestion des utilisateurs</a></li>
             <li><a href="#gestion_memoires">Gestion des mémoires</a></li> 
             <li><a href="déconnexion.php" id="deconnexion">Se déconnecter</a></li>
         </ul>
-    </nav>
+    </div>
 
     <div class="container">
         <h2>Tableau de bord Administrateur</h2>

@@ -1,110 +1,72 @@
 /* CSS pour la page  */
+
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-image: url('../img/bg22.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-nav ul li {
-  display: inline-block;
-  margin-right: 20px;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #2bc3ba;
-  font-weight: bold;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-section {
-  margin-bottom: 40px;
-}
-
-form {
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.form-group input[type="text"],
-.form-group input[type="password"],
-.form-group textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.form-group input[type="file"] {
-  width: auto;
-}
-
-.form-group input[type="submit"],
-.form-group button {
-  width: auto;
-  padding: 10px 20px;
-  background-color: #2bc3ba;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.form-group input[type="submit"]:hover,
-.form-group button:hover {
-  background-color: #238c85;
-}
-
-.error-message {
-  color: red;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.link {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.link a {
-  color: #2bc3ba;
-  text-decoration: none;
-}
-
-.link a:hover {
-  text-decoration: underline;
-}
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('../img/bg22.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  
+  .login-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-box h2 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-group input[type="submit"] {
+    width: 100%;
+    background-color: #2bc3ba;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .link {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .link a {
+    color: #2bc3ba;
+    text-decoration: none;
+  }
+  
+  .link a:hover {
+    text-decoration: underline;
+  }
+  
+  

@@ -42,13 +42,11 @@ class Utilisateur {
         return $this->motDePasse;
     }
     
-    // Méthode pour vérifier si l'utilisateur est un administrateur
-    public function Administrateur() {
+    public function estAdministrateur() {
         return $this->typeUtilisateur === 'Admin';
     }
     
-    // Méthode pour vérifier si l'utilisateur est un étudiant
-    public function Etudiant() {
+    public function estEtudiant() {
         return $this->typeUtilisateur === 'Étudiant';
     }
 }

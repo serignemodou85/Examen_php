@@ -6,8 +6,7 @@ $username = 'root';
 $password = ''; 
 
 try {
-    // Connexion à la base de données
-    $pdo = new PDO("mysql:dbhost=$dbhost;dbname=$dbname", $username, $password, array(
+    $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password, array(
         PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
         PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING
     ));

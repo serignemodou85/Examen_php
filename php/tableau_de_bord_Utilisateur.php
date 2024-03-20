@@ -1,14 +1,12 @@
 <?php
 require_once("connexion.php");
 
-// Fonction pour récupérer la liste des mémoires disponibles
 function getMemoires($pdo) {
     $sql = "SELECT * FROM Mémoires";
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Fonction pour rechercher des mémoires par thème
 function searchMemoiresByTheme($pdo, $themeID) {
     $sql = "SELECT * FROM Mémoires WHERE ThèmeID = ?";
     $stmt = $pdo->prepare($sql);
@@ -34,7 +32,6 @@ function lireMemoires($pdo, $themeID, $domaineID) {
     }
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-// Fonction pour télécharger un mémoire à partir de la base de données
 function downloadMemoire($pdo, $memoireID) {
     $sql = "SELECT Fichier, NomFichier FROM Mémoires WHERE MémoireID = ?";
     $stmt = $pdo->prepare($sql);
@@ -56,13 +53,11 @@ try {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['theme']) && isset($_POST['domaine'])) {
-            // Recherche de mémoires par thème et domaine
             $theme = $_POST['theme'];
             $domaine = $_POST['domaine'];
             $memoires = searchMemoiresByTheme($pdo, $theme);
         }
     } else {
-        // Affichage de la liste des mémoires disponibles
         $memoires = getMemoires($pdo);
     }
 } catch(PDOException $e) {
@@ -102,46 +97,42 @@ try {
             <button type="submit">Rechercher</button>
         </form>
         
-        <!-- Affichage des résultats de recherche -->
         <div id="resultatRecherche">
             <?php  
-            if (isset($_POST["theme"]) || isset($_POST["domaine"])) {   // Si le formulaire est soumis  
+            if (isset($_POST["theme"]) || isset($_POST["domaine"])) {   
                 $resultats = array();
                 
                 if(isset($_POST["theme"])){  
                     $motif = $_POST["theme"];  
                     
-                    foreach($memoires as $memoire){  // Pour chaque mémoire dans la base de données
+                    foreach($memoires as $memoire){  
                         if(strpos($memoire['Theme'],$motif) !== false){ 
-                            $resultats[] = $memoire;  // Si le thème correspond, on ajoute ce mémoire à la liste des résultats
+                            $resultats[] = $memoire;  
                         }
                     }
                 }
-                if(isset($_POST["domaine"])){  // On vérifie si le champ "domaine" a été rempli
-                    $motif = $_POST["domaine"];  // Le motif de recherche est le texte du champ "domaine"
+                if(isset($_POST["domaine"])){  
+                    $motif = $_POST["domaine"];  
                     
-                    foreach($memoires as $memoire){  // Pour chaque mémoire dans la base de données
+                    foreach($memoires as $memoire){ 
                         if(strpos($memoire['Domaine'],$motif) !== false){ 
-                            $resultats[] = $memoire;  // Si le domaine correspond, on ajoute ce mémoire à la liste des résultats
+                            $resultats[] = $memoire;  
                         }
                     }
                 }
                 
-                // Affichage des résultats
-                if(count($resultats) > 0) {  // Si des résultats ont été trouvés
+                if(count($resultats) > 0) {  
                     echo "<h3>Résultats de la recherche :</h3>";
                     foreach ($resultats as $memoire) {
                         echo "<p>" . $memoire['Titre'] . " - <a href='telecharger_memoire.php?id=" . $memoire['MemoireID'] . "'>Télécharger</a></p>";
                     }
-                } else {  // Si aucun résultat n'a été trouvé
+                } else {  
                     echo "<p>Aucun résultat trouvé.</p>";
                 }
             }
             ?>
         </div>
-
-        <a href="déconnexion.php">Se déconnecter</a>
-        
-    </div>
+            //se deconnecter
+            <a href='deconnexion.php'>Se déconnecter</a>
 </body>
 </html>
