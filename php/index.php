@@ -3,12 +3,8 @@
 require_once("./connexion.php");
 require_once("./utilisateur.php");
 
-// Message d'erreur initialisé à vide
-$erreurMessage = '';
-
-// Traitement de la connexion de l'utilisateur
+// Vérification de la soumission du formulaire avec les champs requis remplis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Vérification de la soumission du formulaire avec les champs requis remplis
     if(isset($_POST['NomUtilisateur']) && isset($_POST['mot_de_passe']) && !empty($_POST['NomUtilisateur']) && !empty($_POST['mot_de_passe'])) {
         $nomUtilisateur = $_POST['NomUtilisateur'];
         $motDePasse = $_POST['mot_de_passe'];
@@ -18,35 +14,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE NomUtilisateur = ?");
             $stmt->execute([$nomUtilisateur]);
             $user = $stmt->fetch();
-            
-            // Si l'utilisateur est trouvé dans la base de données
-            if (!empty($user)) {
-                // Vérification du mot de passe
-                if (password_verify($motDePasse, $user["MotDePasse"])) {
-                    // Démarrage de la session et enregistrement des informations utilisateur
-                    session_start();
-                    $_SESSION['id'] = $user['UtilisateurID']; 
-                    $_SESSION['type'] = $user['TypeUtilisateur']; 
-                    
-                    // Redirection vers le tableau de bord en fonction du type d'utilisateur
-                    if ($user['TypeUtilisateur'] === 'administrateur') {
-                        header('Location: tableau_de_bord_Admin.php');
-                        exit(); // Assurez-vous de sortir du script après la redirection
-                    } elseif ($user['TypeUtilisateur'] === 'etudiant') { 
-                        header('Location: tableau_de_bord_Utilisateur.php');
-                        exit(); // Assurez-vous de sortir du script après la redirection
-                    } else {
-                        $erreurMessage = "Type d'utilisateur non reconnu.";
-                    }
-                } else {
-                    $erreurMessage = "Le mot de passe est incorrect.";
+
+            // Vérification du mot de passe et redirection vers le tableau de bord correspondant
+            if (!empty($user) && password_verify($motDePasse, $user["MotDePasse"])) {
+                session_start();
+                $_SESSION['id'] = $user['ID'];
+                $_SESSION['type'] = $user['Type'];
+
+                if ($user['Type'] === 'administrateur') {
+                    header('Location: tableau_de_bord_Admin.php');
+                    exit();
+                } elseif ($user['Type'] === 'etudiant') {
+                    header('Location: tableau_de_bord_Utilisateur.php');
+                    exit();
                 }
-            } else { 
-                $erreurMessage = "L'utilisateur n'existe pas.";
+            } else {
+                header('Location: ./index.php?erreur=1'); // Mot de passe incorrect
+                exit();
             }
-        } catch(PDOException $e) {  
-            echo "<div> Erreur PDO : " . $e->getMessage() . "</div>";
-            die();
+        } catch (PDOException $e) { 
+            die('Erreur : ' . $e->getMessage());
         }
     }
 }
@@ -61,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-box">
         <h2>Identification</h2>
-        <form method="POST" action="index.php">
+        <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <div class="form-group">
                 <label for="NomUtilisateur">Nom d'utilisateur:</label>
                 <input type="text" id="NomUtilisateur" name="NomUtilisateur" required>
@@ -71,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" id="mot_de_passe" name="mot_de_passe" required>
             </div>
             <div class="form-group">
-                <input type="submit" value="Se connecter">
+                <button type="submit">Connexion</button>
             </div>
         </form>
     </div> 

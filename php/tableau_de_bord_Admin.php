@@ -3,7 +3,7 @@ require_once("./connexion.php");
 require_once("./utilisateur.php");
 require_once("./etudiant.php");
 
-// Fonction pour ajouter un utilisateur dans la base de données
+// Fonctions pour la gestion des utilisateurs
 function ajouterUtilisateur($pdo, $prenom, $nom, $nomUtilisateur, $motDePasse, $typeUtilisateur) {
     $hashMotDePasse = password_hash($motDePasse, PASSWORD_DEFAULT);
     $sql = "INSERT INTO Utilisateurs (Prenom, Nom, NomUtilisateur, MotDePasse, TypeUtilisateur) VALUES (?, ?, ?, ?, ?)";
@@ -11,7 +11,6 @@ function ajouterUtilisateur($pdo, $prenom, $nom, $nomUtilisateur, $motDePasse, $
     $stmt->execute([$prenom, $nom, $nomUtilisateur, $hashMotDePasse, $typeUtilisateur]);
 }
 
-// Fonction pour modifier les informations d'un utilisateur dans la base de données
 function modifierUtilisateur($pdo, $utilisateurID, $prenom, $nom, $nomUtilisateur, $motDePasse) {
     if (!empty($motDePasse)) {
         $hashMotDePasse = password_hash($motDePasse, PASSWORD_DEFAULT);
@@ -25,14 +24,12 @@ function modifierUtilisateur($pdo, $utilisateurID, $prenom, $nom, $nomUtilisateu
     }
 }
 
-// Fonction pour supprimer un utilisateur de la base de données
 function supprimerUtilisateur($pdo, $utilisateurID) {
     $sql = "DELETE FROM Utilisateurs WHERE UtilisateurID=?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$utilisateurID]);
 }
 
-// Fonction pour ajouter une mémoire dans la base de données
 function ajouterMemoire($pdo, $titre, $auteur, $description, $themeID, $domaineID, $fichier) {
     // Vérifier l'existence du thème
     $sql = "SELECT COUNT(*) AS theme_count FROM Thèmes WHERE ThèmeID = ?";
@@ -41,38 +38,14 @@ function ajouterMemoire($pdo, $titre, $auteur, $description, $themeID, $domaineI
     $themeExists = $stmt->fetch(PDO::FETCH_ASSOC)['theme_count'];
 
     if ($themeExists) {
-        // Insérer la mémoire si le thème existe
         $sql = "INSERT INTO Mémoires (Titre, Auteur, Description, ThèmeID, DomaineID, Fichier) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$titre, $auteur, $description, $themeID, $domaineID, $fichier]);
     } else {
-        // Afficher un message d'erreur si le thème n'existe pas
         echo "Erreur : Le thème spécifié n'existe pas.";
     }
 }
 
-// Fonction pour lire les mémoires de la base de données
-function lireMemoires($pdo, $themeID, $domaineID) {
-    if ($themeID && $domaineID) {
-        $sql = "SELECT * FROM Mémoires WHERE ThèmeID=? AND DomaineID=?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$themeID, $domaineID]);
-    } elseif ($themeID) {
-        $sql = "SELECT * FROM Mémoires WHERE ThèmeID=?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$themeID]);
-    } elseif ($domaineID) {
-        $sql = "SELECT * FROM Mémoires WHERE DomaineID=?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$domaineID]);
-    } else {
-        $sql = "SELECT * FROM Mémoires";
-        $stmt = $pdo->query($sql);
-    }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Fonction pour modifier une mémoire dans la base de données
 function modifierMemoire($pdo, $memoireID, $titre, $auteur, $description, $themeID, $domaineID, $fichier) {
     // Vérifier l'existence du thème
     $sql = "SELECT COUNT(*) AS theme_count FROM Thèmes WHERE ThèmeID = ?";
@@ -81,21 +54,23 @@ function modifierMemoire($pdo, $memoireID, $titre, $auteur, $description, $theme
     $themeExists = $stmt->fetch(PDO::FETCH_ASSOC)['theme_count'];
 
     if ($themeExists) {
-        // Mettre à jour la mémoire si le thème existe
         $sql = "UPDATE Mémoires SET Titre=?, Auteur=?, Description=?, ThèmeID=?, DomaineID=?, Fichier=? WHERE MémoireID=?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$titre, $auteur, $description, $themeID, $domaineID, $fichier, $memoireID]);
     } else {
-        // Afficher un message d'erreur si le thème n'existe pas
         echo "Erreur : Le thème spécifié n'existe pas.";
     }
 }
 
+function supprimerMemoire($pdo, $memoireID) {
+    $sql = "DELETE FROM Mémoires WHERE MémoireID=?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$memoireID]);
+}
 try {
     $pdo = new PDO("mysql:dbhost=$dbhost;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Gestion des actions en fonction des requêtes HTTP
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['ajouter_utilisateur'])) {
             $prenom = isset($_POST['prenom']) ? $_POST['prenom'] : '';
@@ -137,16 +112,11 @@ try {
         }
     }
 
-    // Récupérer l'ID de l'utilisateur connecté (à remplacer par la méthode appropriée)
-    $utilisateurID = 'utilisateurID'; 
-    $memoires = lireMemoires($pdo, null, null);
-    foreach ($memoires as $memoire) {
-        echo $memoire['Titre'] . "<br>";
-    }
 } catch(PDOException $e) {
     die("Une erreur est survenue lors de la connexion à la base de données : " . $e->getMessage());
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -179,20 +149,16 @@ try {
                 ?>
                 <form method="post">
                     <?php if ($afficherUtilisateurs) { ?>
-                        <!-- Bouton pour masquer les utilisateurs -->
                         <button type="submit" name="masquer_utilisateurs">Masquer Utilisateurs</button>
                     <?php } else { ?>
-                        <!-- Bouton pour afficher les utilisateurs -->
                         <button type="submit" name="afficher_utilisateurs">Afficher Utilisateurs</button>
                     <?php } ?>
                 </form>
             </div>
         </section>
 
-        
         <section id="ajout_utilisateur">
             <form id="ajouterUtilisateurForm" method="post">
-                <!-- Formulaire d'ajout d'utilisateur -->
                 <label for="nom">Nom :</label><br>
                 <input type="text" name="nom" id="nom" required /><br>
                 
@@ -213,14 +179,38 @@ try {
                 
                 <button type="submit" name="ajouter_utilisateur">Ajouter Utilisateur</button><br>
             </form>
-        
         </section>
-        
+
+        <section id="modifier_utilisateur">
+            <form method="post">
+                <label for="utilisateurID">Sélectionner l'utilisateur à modifier :</label>
+                <select id="utilisateurID" name="utilisateurID" required>
+                    
+                </select><br>
+                <label for="prenom">Prénom :</label><br>
+                <input type="text" name="prenom" id="prenom" required /><br>
+                <label for="nom">Nom :</label><br>
+                <input type="text" name="nom" id="nom" required /><br>
+                <label for="NomUtilisateur">Nom d'utilisateur :</label><br>
+                <input type="text" name="NomUtilisateur" id="NomUtilisateur" required /><br>
+                <label for="motDePasse">Nouveau mot de passe :</label><br>
+                <input type="password" name="motDePasse" id="motDePasse" /><br>
+                <button type="submit" name="modifier_utilisateur">Modifier l'utilisateur</button>
+            </form>
+        </section>
+        <section id="supprimer_utilisateur">
+            <form method="post">
+                <label for="utilisateurID">Sélectionner l'utilisateur à supprimer :</label>
+                <select id="utilisateurID" name="utilisateurID" required>
+                    
+                </select>
+                <button type="submit" name="supprimer_utilisateur">Supprimer l'utilisateur</button>
+            </form>
+        </section>
+
         <section id="gestion_memoires">
             <div id="memoires">
-                <!-- Liste des mémoires affichée dynamiquement via PHP -->
                 <?php 
-                // Vérifier si l'administrateur a choisi d'afficher les memoires
                 $afficherMemoires = isset($_POST['afficher_memoires']) ? true : false;
                 
                 if ($afficherMemoires) {
@@ -230,17 +220,13 @@ try {
                 ?>
                 <form method="post">
                     <?php if ($afficherUtilisateurs) { ?>
-                        <!-- Bouton pour masquer les utilisateurs -->
                         <button type="submit" name="masquer_memoires">Masquer Memoires</button>
                     <?php } else { ?>
-                        <!-- Bouton pour afficher les utilisateurs -->
                         <button type="submit" name="afficher_memoires">Afficher Memoires</button>
                     <?php } ?>
             </div>
         </section>
-
         <section id="ajout_memoire">
-            <!-- Formulaire d'ajout de mémoire -->
             <form id="ajouterMemoireForm" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="titre">Titre :</label>
@@ -269,34 +255,36 @@ try {
                 <button type="submit" name="ajouter_memoire">Ajouter la mémoire</button>
             </form>
         </section>
-        
-        <!-- Section pour modifier une mémoire -->
         <section id="modifier_memoire">
-            <h3>Modification d'une mémoire</h3>
-            <p>Veuillez sélectionner une mémoire à partir de la liste ci-dessous.</p>
-            <select onchange="afficherInfosPourModif(this)" id="listeMemoiresSelect">
-                <!-- Liste des mémoires affichées dans le select -->
-            </select>  
-            <hr />
-            <div id="infosPourModif">
-            </div>
-            <button onclick="ouvrirModal('ajout')" >Ajouter une nouvelle mémoire</button>  
-        </section> 
-        
-        <!-- Section pour supprimer une mémoire -->
+            <form method="post" enctype="multipart/form-data" action="#" id="formulaire2">
+                <div id="informations">
+                    <fieldset id="infos1">
+                        <legend>Informations sur la mémoire :</legend>
+                        <p id="id"></p> 
+                        <p>Titre : <span id="titre"></span></p>
+                        <p>Date de soutenance : <span id="dateSout"></span></p>
+                        <p>Auteur : <span id="auteur"></span></p>
+                        <p>Domaine : <span id="domaine"></span></p>
+                    </fieldset>
+                    <fieldset id="infos2">
+                        <legend>Lien vers le fichier PDF :</legend>
+                        <a target="_blank" id="lien"></a>
+                    </fieldset>
+                </div>
+                <input type="file" accept=".pdf" required name="fichier"/><br/><br/>
+                <button type="reset" name="annuler">Annuler</button>
+                <button type="submit" name="valider">Valider</button>
+            </form>
+        </section>
         <section id="supprimer_memoire">
-            <h3>Suppression d'une mémoire</h3>
-            <p>Veuillez sélectionner une mémoire à partir de la liste ci-dessous.</p>
-            <table>
-                <tr>
-                    <th>Titre</th>
-                    <th>Date de publication</th>
-                    <th>Action</th>
-                </tr>
-                <tbody id="listeMemoires">
-                    <!-- Liste des mémoires avec boutons de suppression -->
-                </tbody>
-            </table>
+            <form method="post">
+                <label for="memoireID">Sélectionner la mémoire à supprimer :</label>
+                <select id="memoireID" name="memoireID" required>
+                    <!-- Remplissez cette liste avec les mémoires disponibles depuis la base de données -->
+                    <!-- Exemple: <option value="1">Mémoire 1</option> -->
+                </select>
+                <button type="submit" name="supprimer_memoire">Supprimer la mémoire</button>
+            </form>
         </section>
     </div>
 </body>

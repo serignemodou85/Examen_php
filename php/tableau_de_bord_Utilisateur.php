@@ -15,7 +15,25 @@ function searchMemoiresByTheme($pdo, $themeID) {
     $stmt->execute([$themeID]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
+function lireMemoires($pdo, $themeID, $domaineID) {
+    if ($themeID && $domaineID) {
+        $sql = "SELECT * FROM Mémoires WHERE ThèmeID=? AND DomaineID=?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$themeID, $domaineID]);
+    } elseif ($themeID) {
+        $sql = "SELECT * FROM Mémoires WHERE ThèmeID=?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$themeID]);
+    } elseif ($domaineID) {
+        $sql = "SELECT * FROM Mémoires WHERE DomaineID=?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$domaineID]);
+    } else {
+        $sql = "SELECT * FROM Mémoires";
+        $stmt = $pdo->query($sql);
+    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 // Fonction pour télécharger un mémoire à partir de la base de données
 function downloadMemoire($pdo, $memoireID) {
     $sql = "SELECT Fichier, NomFichier FROM Mémoires WHERE MémoireID = ?";
