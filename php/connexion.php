@@ -1,9 +1,9 @@
 <?php
 session_start();
-$dbhost = 'localhost';
-$dbname = 'gestionmemoires';
-$username = 'root'; 
-$password = ''; 
+$dbhost = 'mysql-fallmo.alwaysdata.net';
+$dbname = 'fallmo_gm';
+$username = 'fallmo'; 
+$password = 'passe123'; 
 
 try {
     $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password, array(
