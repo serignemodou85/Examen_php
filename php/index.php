@@ -22,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_start();
                 $_SESSION['id'] = $user['UtilisateurID']; 
                 $_SESSION['type'] = $user['TypeUtilisateur']; 
-
+            
+                // Redirection en fonction du type d'utilisateur
                 if ($user['TypeUtilisateur'] === 'admin') {
                     redirect('tableau_de_bord_Admin.php');
                 } elseif ($user['TypeUtilisateur'] === 'etudiant') {

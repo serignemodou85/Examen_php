@@ -185,8 +185,15 @@ try {
             <form method="post">
                 <label for="utilisateurID">Sélectionner l'utilisateur à modifier :</label>
                 <select id="utilisateurID" name="utilisateurID" required>
-                    
+                    <?php
+                    require_once("liste_utilisateurs.php");
+                    foreach ($utilisateurs as $utilisateur) {
+                        echo "<option value='{$utilisateur['UtilisateurID']}'>{$utilisateur['nom']}</option>";
+                    }
+                    ?>
                 </select><br>
+            
+                <!-- Formulaire de modification -->
                 <label for="prenom">Prénom :</label><br>
                 <input type="text" name="prenom" id="prenom" required /><br>
                 <label for="nom">Nom :</label><br>
@@ -198,6 +205,7 @@ try {
                 <button type="submit" name="modifier_utilisateur">Modifier l'utilisateur</button>
             </form>
         </section>
+
         <section id="supprimer_utilisateur">
             <form method="post">
                 <label for="utilisateurID">Sélectionner l'utilisateur à supprimer :</label>
