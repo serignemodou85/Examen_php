@@ -1,14 +1,12 @@
 <?php
-require_once("./connexion.php");
+require_once("connexion.php");
 
-// Récupérer la liste des utilisateurs depuis la base de données
 try {
-    $sql = "SELECT UtilisateurID, NomUtilisateur FROM Utilisateurs";
+    $sql = "SELECT UtilisateurID, NomUtilisateur FROM utilisateurs";
     $stmt = $pdo->query($sql);
     $utilisateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if ($utilisateurs) {
-        // Afficher la liste des utilisateurs
         foreach ($utilisateurs as $utilisateur) {
             echo "<p>{$utilisateur['NomUtilisateur']}</p>";
         }

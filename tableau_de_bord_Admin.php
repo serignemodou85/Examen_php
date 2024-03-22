@@ -1,9 +1,8 @@
 <?php
-require_once("./connexion.php");
-require_once("./utilisateur.php");
-require_once("./etudiant.php");
+require_once("connexion.php");
+require_once("utilisateur.php");
+require_once("etudiant.php");
 
-// Fonctions pour la gestion des utilisateurs
 function ajouterUtilisateur($pdo, $prenom, $nom, $nomUtilisateur, $motDePasse, $typeUtilisateur) {
     $hashMotDePasse = password_hash($motDePasse, PASSWORD_DEFAULT);
     $sql = "INSERT INTO Utilisateurs (Prenom, Nom, NomUtilisateur, MotDePasse, TypeUtilisateur) VALUES (?, ?, ?, ?, ?)";
@@ -31,14 +30,13 @@ function supprimerUtilisateur($pdo, $utilisateurID) {
 }
 
 function ajouterMemoire($pdo, $titre, $auteur, $description, $themeID, $domaineID, $fichier) {
-    // Vérifier l'existence du thème
-    $sql = "SELECT COUNT(*) AS theme_count FROM Thèmes WHERE ThèmeID = ?";
+    $sql = "SELECT COUNT(ThèmeID) AS theme_count FROM thèmes WHERE ThèmeID = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$themeID]);
     $themeExists = $stmt->fetch(PDO::FETCH_ASSOC)['theme_count'];
 
     if ($themeExists) {
-        $sql = "INSERT INTO Mémoires (Titre, Auteur, Description, ThèmeID, DomaineID, Fichier) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO mémoires (Titre, Auteur, Description, ThèmeID, DomaineID, Fichier) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$titre, $auteur, $description, $themeID, $domaineID, $fichier]);
     } else {
@@ -47,28 +45,28 @@ function ajouterMemoire($pdo, $titre, $auteur, $description, $themeID, $domaineI
 }
 
 function modifierMemoire($pdo, $memoireID, $titre, $auteur, $description, $themeID, $domaineID, $fichier) {
-    // Vérifier l'existence du thème
-    $sql = "SELECT COUNT(*) AS theme_count FROM Thèmes WHERE ThèmeID = ?";
+    $sql = "SELECT COUNT(ThèmeID) AS theme_count FROM thèmes WHERE ThèmeID = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$themeID]);
     $themeExists = $stmt->fetch(PDO::FETCH_ASSOC)['theme_count'];
 
     if ($themeExists) {
-        $sql = "UPDATE Mémoires SET Titre=?, Auteur=?, Description=?, ThèmeID=?, DomaineID=?, Fichier=? WHERE MémoireID=?";
+        $sql = "UPDATE mémoires SET Titre=?, Auteur=?, Description=?, ThèmeID=?, DomaineID=?, Fichier=? WHERE MémoireID=?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$titre, $auteur, $description, $themeID, $domaineID, $fichier, $memoireID]);
     } else {
-        echo "Erreur : Le thème spécifié n'existe pas.";
+        echo "Erreur : Le thème  n'existe pas.";
     }
 }
 
 function supprimerMemoire($pdo, $memoireID) {
-    $sql = "DELETE FROM Mémoires WHERE MémoireID=?";
+    $sql = "DELETE FROM mémoires WHERE MémoireID=?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$memoireID]);
 }
+
 try {
-    $pdo = new PDO("mysql:dbhost=$dbhost;dbname=$dbname", $username, $password);
+    $pdo = new PDO("mysql:host=$dbhost;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -116,20 +114,19 @@ try {
     die("Une erreur est survenue lors de la connexion à la base de données : " . $e->getMessage());
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Tableau de bord Administrateur</title>
-    <link rel="stylesheet" href="../css/tableau_de_bord_Admin.css">
+    <link rel="stylesheet" href="css/tableau_de_bord_Admin.css">
 </head>
 <body>
 <div class="menu">
         <ul>
             <li><a href="#gestion_utilisateurs">Gestion des utilisateurs</a></li>
             <li><a href="#gestion_memoires">Gestion des mémoires</a></li> 
-            <li><a href="déconnexion.php" id="deconnexion">Se déconnecter</a></li>
+            <li><a href="déconnexion.php" id="déconnexion">Se déconnecter</a></li>
         </ul>
     </div>
 
@@ -139,11 +136,9 @@ try {
         <section id="gestion_utilisateurs">
             <div id="utilisateurs">
                 <?php 
-                // Vérifier si l'administrateur a choisi d'afficher les utilisateurs
                 $afficherUtilisateurs = isset($_POST['afficher_utilisateurs']) ? true : false;
                 
                 if ($afficherUtilisateurs) {
-                    
                     require_once("liste_utilisateurs.php"); 
                 }
                 ?>
@@ -156,6 +151,7 @@ try {
                 </form>
             </div>
         </section>
+
 
         <section id="ajout_utilisateur">
             <form id="ajouterUtilisateurForm" method="post">
@@ -219,21 +215,22 @@ try {
         <section id="gestion_memoires">
             <div id="memoires">
                 <?php 
-                $afficherMemoires = isset($_POST['afficher_memoires']) ? true : false;
-                
-                if ($afficherMemoires) {
+                    $afficherMemoires = isset($_POST['afficher_memoires']) ? true : false;
                     
-                    require_once("liste_memoires.php"); 
-                }
-                ?>
-                <form method="post">
-                    <?php if ($afficherUtilisateurs) { ?>
-                        <button type="submit" name="masquer_memoires">Masquer Memoires</button>
-                    <?php } else { ?>
-                        <button type="submit" name="afficher_memoires">Afficher Memoires</button>
-                    <?php } ?>
-            </div>
+                    if ($afficherMemoires) {
+                        require_once("liste_memoires.php"); 
+                    }
+                    ?>
+                    <form method="post">
+                        <?php if ($afficherMemoires) { ?>
+                            <button type="submit" name="masquer_memoires">Masquer Mémoires</button>
+                        <?php } else { ?>
+                            <button type="submit" name="afficher_memoires">Afficher Mémoires</button>
+                        <?php } ?>
+                    </form>
+                </div>
         </section>
+
         <section id="ajout_memoire">
             <form id="ajouterMemoireForm" method="post" enctype="multipart/form-data">
                 <div class="form-group">
